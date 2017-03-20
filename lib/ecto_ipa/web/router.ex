@@ -17,10 +17,7 @@ defmodule EctoIpa.Web.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    resources "/breweries", BreweryController, except: [:new, :edit]
+    resources "/beer_styles", BeerStyleController, except: [:new, :edit]
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", EctoIpa.Web do
-  #   pipe_through :api
-  # end
 end
