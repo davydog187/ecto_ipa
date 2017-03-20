@@ -22,7 +22,9 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :ecto_ipa, :brewery_db, "fc2641c84d043f86dd194acbe9c65e75"
+config :ecto_ipa, :brewery_db, 
+  key: "fc2641c84d043f86dd194acbe9c65e75",
+  api_url: ""
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
