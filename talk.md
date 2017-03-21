@@ -43,7 +43,7 @@ field :ibu, :integer
 field :name, :string
 ```
 
-[Breweries](https://github.com/davydog187/ecto_ipa/blob/master/lib/ecto_ipa/bar/brewery.ex) will have a city, name, and the year founded. They will also be associated with a random number of beer styles. 
+[Breweries](https://github.com/davydog187/ecto_ipa/blob/master/lib/ecto_ipa/bar/brewery.ex) will have a city, name, and the year founded. They will also be associated with a random number of beer styles.
 ```elixir
  field :city, :string
  field :name, :string
