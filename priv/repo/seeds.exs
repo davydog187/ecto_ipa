@@ -143,19 +143,35 @@ alias EctoIpa.{Bar, Repo, SeedData}
 abv_values = Enum.map(5..20, fn num -> num / 1 end)
 ibu_values = 5..120
 
-styles = Enum.map(styles, fn style ->
-  Repo.insert!(%Bar.BeerStyle{
-    name: style,
-    abv: Enum.random(abv_values),
-    ibu: Enum.random(ibu_values)
-  })
+styles =
+  Enum.map(styles, fn style ->
+    %Bar.BeerStyle{
+      name: style,
+      abv: Enum.random(abv_values),
+      ibu: Enum.random(ibu_values)
+    }
+    |> Repo.insert!()
+    |> Repo.preload(:breweries)
+  end)
+
+num_styles = length(styles)
+random_range = 1..num_styles
+
+Enum.each(breweries, fn {name, city, year} ->
+  brewery =
+    %Bar.Brewery{
+      name: name,
+      city: city,
+      year_founded: year
+    }
+    |> Repo.insert!()
+    |> Repo.preload(:beer_styles)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:beer_styles, Enum.take_random(styles, Enum.random(random_range)))
+    |> Repo.update!()
+
+
 end)
 
 
-Enum.map(breweries, fn {name, city, year} ->
-  Repo.insert!(%Bar.Brewery{
-    name: name,
-    city: city,
-    year_founded: year
-  })
-end)
+
