@@ -2,19 +2,19 @@
 
 ## Topics
 
-* Changesets
-* Schemas
-    * Database backed schemas
-    * Embedded schemas
+* Database backed schemas  
+* Changesets 
 * Ecto.Query
-    * Expressiveness
-    * Schemaless
+* Embedded schemas
 
 ## Foreward
 
 As of today (3/22/17), I have been writing Elixir professionally for 6 months for https://theoutline.com. In this 6 months I have become increasingly excited about the capabilities of Elixir and the robustness of the ecosystem. As a programmer who builds for the web, you will often find yourself in need of persisting various forms of data to a database. Today I would like to speak about Ecto, a fantastic Elixir library that provides excellent primitives for interacting with data and databases.
 
 Ecto is two libraries, a data validation library (Changesets), and a database abstraction for fetching and storing data (pretty much everything else). When I began working with Phoenix, I found Ecto to have the largest learning curve. After overcoming this curve, I have found Ecto to be **the** most powerful tool in my Elixir toolbelt. Today I would like to introduce you to the most important concepts in Ecto for you to become dangerous.
+
+### Prior Art
+It is also worth noting where Ecto draws inspiration from. Those who are familar with [ActiveRecord](https://github.com/rails/rails/tree/master/activerecord) in the Ruby on Rails world will feel pretty comfortable moving to Ecto. José Valim, the creator of Elixir, and longtime major Rails contributor, is by far the largest contributor to Ecto. Many of the shortcomings in ActiveRecord have been taken as lessons learned by José and team, and this wisdom helps make Ecto an incredible tool to work with.
 
 ### What will we learn today?
 * Changesets - The data validation portion of Ecto
@@ -53,6 +53,35 @@ field :year_founded, :integer
 
 many_to_many :beer_styles, BeerStyle, join_through: "brewery_styles"
 ```
+
+## Schemas
+
+The above are snapshots of what Ecto calls a Schema. A schema is two things, a struct consisting of fields, types, and other metadata, and the database table that they map back to. 
+
+```elixir
+defmodule EctoIpa.Bar.BeerStyle do
+  use Ecto.Schema
+
+  alias EctoIpa.Bar.Brewery
+
+  schema "bar_beer_styles" do
+    field :name, :string
+    field :abv, :float
+    field :ibu, :integer
+
+    many_to_many :breweries, Brewery, join_through: "brewery_styles"
+
+    timestamps()
+  end
+
+end
+```
+
+This schema defines 4 fields, which behind the scenes will call `defstruct`, and define a structure for you to work with. It also specifies the database table that it maps back to `schema "bar_beer_styles"`. 
+
+## Migrations
+
+
 
 **Data Disclaimer**
 I'd also like to mention that the data we're playing with today is mostly fake. It uses real New York brewery names, but associates them with beer styles that they may or may not brew. Sorry New York breweries 🙃.
