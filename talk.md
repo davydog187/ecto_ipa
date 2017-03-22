@@ -22,18 +22,26 @@ It is also worth noting where Ecto draws inspiration from. Those who are familar
 * Ecto.Query - A super expressive abstraction over SQL that gives you several ways to interact with your data
 * Ecto without a DB - How `embedded_schemas` and `Changeset`s make Ecto a good choice even when you don't have a database
 
-### What will we not go over?
+### What will we **not** go over?
 * Ecto.Multi
 * Transactions
 * Adapters (Databases other than Postgres or MySQL)
 * Ecto Custom Types
+* ...and more
 
 The best way to learn something new is to dive into writing code. Today I'd like to show you some concrete examples that you can follow along with. 
 
 Its also worth noting that one best features of Elixir is its first class documentation, and Ecto is no exception. When in doubt, [read the docs](https://hexdocs.pm/ecto/Ecto.html). They are not only your friend, but an extensive learning tool. If you're really struggling to understand a bit of code, or curious how something works, reach for the docs first. They will often provide working examples, as well as links back to the source code.
 
-### Working Example - EctoIPA 
-Today we will be thinking in terms of :beer:, specifically breweries, and the styles of beer that they brew. We are going to keep our example as simple as possible, using two tables.
+## Assumptions
+* You understand the basics of a database (Postgres for our example)
+* You are familiar at a high level with Elixir syntax
+
+## Todays Example - EctoIPA 
+Today we will be thinking in terms of :beer:, specifically breweries, and the styles of beer that they brew. We are going to keep our example as simple as possible, using two tables to describe breweries, and the styles of beer that they brew.
+
+**Data Disclaimer**
+I'd also like to mention that the data we're playing with today is mostly fake. It uses real New York brewery names, but associates them with beer styles that they may or may not brew. Sorry New York breweries 🙃.
 
 [Beer Styles](https://github.com/davydog187/ecto_ipa/blob/master/lib/ecto_ipa/bar/beer_style.ex) are the first table. They consist of a name (e.g. Pilsener), an abv (Alchohol By Volume) value, ranging between 0 and .20, and IBU (International Bitterness Unit) between 5 and 120.
 
@@ -81,10 +89,7 @@ This schema defines 4 fields, which behind the scenes will call `defstruct`, and
 
 ## Migrations
 
-
-
-**Data Disclaimer**
-I'd also like to mention that the data we're playing with today is mostly fake. It uses real New York brewery names, but associates them with beer styles that they may or may not brew. Sorry New York breweries 🙃.
+In order to create the underlying database tables, we need to write an ecto migration. Ecto provides 
 
 
 ## Changesets
@@ -139,7 +144,7 @@ changeset
 |> validate_number(:abv, less_than_or_equal_to: 0.20, greater_than: 0)
 ```
 
-It has all three required fields, and ibu and abv are within the specified ranges. The return value of this function would be a `%Ecto.Changeset{valid?: true}`
+It has all three required fields, and ibu and abv are within the specified ranges. The return value of this function match on a `%Ecto.Changeset{valid?: true}`
 
 However, if the user omitted one of the required fields, like name, we would see an error like so
 
@@ -196,4 +201,4 @@ This will return effectively the same code. Its also interesting to point out th
 
 If we would like to get a list of `BeerStyle`s back, you can either omit the select part of the statement to get the entire struct back, or specify which `BeerStyle` fields you would like using `select([:name, :abv])`. The prior example would not pull `ibu` out of the database, but will decode it into a struct for you.
 
-## Schemas
+## Embedded Schemas
