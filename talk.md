@@ -60,9 +60,64 @@ I'd also like to mention that the data we're playing with today is mostly fake. 
 
 ## Changesets
 
-The Changeset is the data validation portion of Ecto. It is both a datastructure, and a suite of functions that help you verify external input. Lets start with the example of a `BeerStyle`. Besides its relationship to a `Brewery`, it has three pieces of metadata, name, abv, and ibu, each with their own constraints. 
+The Changeset is the data validation portion of Ecto. It is both a datastructure, and a suite of functions that help you verify external input. 
 
-Changesets are useful for when we want to create and update a `BeerStyle`. They let you take input data, that may have extra keys, break constraints, or miss key fields, safely convert it into either a valid or invalid changeset. Lets look at some changeset code
+Lets start with the example of a `BeerStyle`. Besides its relationship to a `Brewery`, it has three pieces of metadata, name, abv, and ibu, each with their own constraints. Changesets are useful for when we want to create or update a `BeerStyle`. For our example, we have a json api that lets you create and update beer styles. 
+
+```elixir
+def create_beer_style(attrs \\ %{}) do
+   %BeerStyle{}
+   |> beer_style_changeset(attrs)
+|> Repo.insert()
+end
+```
+
+In the above, `attrs` may have extra keys, break constraints, or miss required fields. If we run this data through a Changeset, we can safely confirm if it is a valid or invalid changeset.
+
+```elixir
+defp beer_style_changeset(%BeerStyle{} = beer_style, attrs) do
+  beer_style
+  |> cast(attrs, [:name, :ibu, :abv])
+  |> validate_required([:name, :ibu, :abv])
+  |> validate_inclusion(:ibu, 5..120)
+  |> validate_number(:abv, less_than_or_equal_to: 0.20, greater_than: 0)
+end
+```
+
+Lets break this down line by line.
+
+```elixir
+cast(beer_style, attrs, [:name, :ibu, :abv])
+```
+
+First, we take a `%BeerStyle{}`, and the input parameters from our user, `attrs`, and convert `name`, `ibu`, and `abv` to atom keys.
+
+```elixir
+%{
+  "name" => "New Valid Style",
+  "ibu" => 10,
+  "abv" => 0.09,
+  "this_will_be_ignored" => true
+}
+```
+
+This would pass the next three lines of validation
+
+```elixir
+changeset
+|> validate_required([:name, :ibu, :abv])
+|> validate_inclusion(:ibu, 5..120)
+|> validate_number(:abv, less_than_or_equal_to: 0.20, greater_than: 0)
+```
+
+It has all three required fields, and ibu and abv are within the specified ranges. The return value of this function would be a `%Ecto.Changeset{valid?: true}`
+
+However, if the user omitted one of the required fields, like name, we would see an error like so
+
+```elixir
+{:error, #Ecto.Changeset<action: :insert, changes: %{abv: 0.09, ibu: 10}, errors: [name: {"can't be blank", [validation: :required]}], data: #EctoIpa.Bar.BeerStyle<>, valid?: false>}
+```
+
 
 
 ## Schemas
