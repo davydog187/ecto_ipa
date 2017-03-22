@@ -41,22 +41,28 @@ Today we will be thinking in terms of :beer:, specifically breweries, and the st
 field :abv, :float
 field :ibu, :integer
 field :name, :string
+
+many_to_many :breweries, Brewery, join_through: "brewery_styles"
 ```
 
 [Breweries](https://github.com/davydog187/ecto_ipa/blob/master/lib/ecto_ipa/bar/brewery.ex) will have a city, name, and the year founded. They will also be associated with a random number of beer styles.
 ```elixir
- field :city, :string
- field :name, :string
- field :year_founded, :integer
+field :city, :string
+field :name, :string
+field :year_founded, :integer
+
+many_to_many :beer_styles, BeerStyle, join_through: "brewery_styles"
 ```
 
 **Data Disclaimer**
-I'd also like to mention that the data we're playing with today is mostly fake. It uses real New York brewery names, but associates them with beer styles that they may or may not brew. Sorry New York breweries.
+I'd also like to mention that the data we're playing with today is mostly fake. It uses real New York brewery names, but associates them with beer styles that they may or may not brew. Sorry New York breweries 🙃.
 
 
 ## Changesets
 
-The Changeset is the data validation portion of Ecto. It is both a datastructure, and a suite of functions that help you verify external input. Lets start with 
+The Changeset is the data validation portion of Ecto. It is both a datastructure, and a suite of functions that help you verify external input. Lets start with the example of a `BeerStyle`. Besides its relationship to a `Brewery`, it has three pieces of metadata, name, abv, and ibu, each with their own constraints. 
+
+Changesets are useful for when we want to create and update a `BeerStyle`. They let you take input data, that may have extra keys, break constraints, or miss key fields, safely convert it into either a valid or invalid changeset. Lets look at some changeset code
 
 
 ## Schemas
