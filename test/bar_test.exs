@@ -8,9 +8,17 @@ defmodule EctoIpa.BarTest do
   @update_attrs %{city: "some updated city", name: "some updated name", year_founded: 43}
   @invalid_attrs %{city: nil, name: nil, year_founded: nil}
 
-  def fixture(:brewery, attrs \\ @create_attrs) do
+  @style_attrs %{abv: 0.05, ibu: 10, name: "IPA"}
+
+  def fixture(name, attrs \\ @create_attrs)
+  def fixture(:brewery, attrs) do
     {:ok, brewery} = Bar.create_brewery(attrs)
     brewery
+  end
+
+  def fixture(:style, attrs) do
+    {:ok, style} = Bar.create_beer_style(attrs)
+    style
   end
 
   test "list_breweries/1 returns all breweries" do
@@ -47,6 +55,12 @@ defmodule EctoIpa.BarTest do
     brewery = fixture(:brewery)
     assert {:error, %Ecto.Changeset{}} = Bar.update_brewery(brewery, @invalid_attrs)
     assert brewery == Bar.get_brewery!(brewery.id)
+  end
+
+  test "update_beer_style/2 with invalid data returns error changeset" do
+    style = fixture(:style, @style_attrs)
+    assert {:error, %Ecto.Changeset{valid?: false}} = Bar.update_beer_style(style, %{abv: 10, ibu: 4})
+    assert style == Bar.get_beer_style!(style.id)
   end
 
   test "delete_brewery/1 deletes the brewery" do
