@@ -175,7 +175,7 @@ from s in "bar_beer_styles", where: s.abv > 0.10, select: s.name
 This is ~roughly~ equilavent to the Postgres SQL
 
 ```sql
-SELECT b0."name" FROM "bar_beer_styles" AS b0 WHERE (b0."abv" > 0.1::float) 
+SELECT b0."name" FROM "bar_beer_styles" AS b0 WHERE (b0."abv" > 0.1::float)
 ```
 
 This is great if you're coming from another language, and already familiar with SQL. What if you're not? Thats where Ecto's beauty comes in. Ecto allows you to functionally compose query functions, so you can write your queries just how you would write some other kind of data transformation
