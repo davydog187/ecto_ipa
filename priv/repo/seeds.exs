@@ -157,7 +157,7 @@ styles =
 num_styles = length(styles)
 random_range = 1..num_styles
 
-Enum.each(breweries, fn {name, city, year} ->
+for {name, city, year} <- breweries do
   brewery =
     %Bar.Brewery{
       name: name,
@@ -169,9 +169,4 @@ Enum.each(breweries, fn {name, city, year} ->
     |> Ecto.Changeset.change()
     |> Ecto.Changeset.put_assoc(:beer_styles, Enum.take_random(styles, Enum.random(random_range)))
     |> Repo.update!()
-
-
-end)
-
-
-
+end
