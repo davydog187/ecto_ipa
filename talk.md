@@ -128,8 +128,43 @@ Or if we tried to update abv or ibu outside of the validated rangers
               data: #EctoIpa.Bar.BeerStyle<>, valid?: false>}
 ```
 
+## The beauty of Ecto.Query
 
+So far we've only talked about creating and updating data in your database. Now I'd like to talk about the robustness of `Ecto.Query`, and its amazing flexibility. 
+
+Ecto queries have struck an incredible balance. They are a near perfect DSL for SQL that really reads and writes like its underlying SQL representation. Take the following example
+
+```elixir
+from s in "bar_beer_styles", where: s.abv > 0.10, select: s.name
+```
+
+This is ~roughly~ equilavent to the Postgres SQL
+
+```sql
+SELECT b0."name" FROM "bar_beer_styles" AS b0 WHERE (b0."abv" > 0.1::float) 
+```
+
+This is great if you're coming from another language, and already familiar with SQL. What if you're not? Thats where Ecto's beauty comes in. Ecto allows you to functionally compose query functions, so you can write your queries just how you would write some other kind of data transformation
+
+```elixir
+BeerStyle
+|> where([s], s.abv > 0.10)
+|> select([s], s.name)
+```
+
+This will return effectively the same code. Its also interesting to point out the above queries are "schemaless". Because we specified a select statement that pulls out an individual field, we will only get a list of style names back like so
+
+```elixir
+["Altbier", "Amber ale", "Barley wine", "American Barleywine",
+ "Berliner Weisse", "Best Bitter", "Blonde Ale", "Bock", "Brown ale",
+ "Cream Ale", "Doppelbock", "Dunkel", "European-Style Dark Lager",
+ "Dunkelweizen", "Eisbock", "Flanders red ale", "Golden/Summer ale",
+ "Golden Ale", "Gose", "Gueuze", "Hefeweizen", "Helles", "India pale ale",
+ "American-Style India Pale Ale", "Session India Pale Ale", "Imperial",
+ "English IPA", "American IPA", "Specialty IPA", "Double IPA", "Kölsch",
+ "Lambic", "Fruit Lambic", "Light ale", ...]
+```
+
+If we would like to get a list of `BeerStyle`s back, you can either omit the select part of the statement to get the entire struct back, or specify which `BeerStyle` fields you would like using `select([:name, :abv])`. The prior example would not pull `ibu` out of the database, but will decode it into a struct for you.
 
 ## Schemas
-
-## The beauty of Ecto.Query
