@@ -68,7 +68,7 @@ Lets start with the example of a `BeerStyle`. Besides its relationship to a `Bre
 def create_beer_style(attrs \\ %{}) do
    %BeerStyle{}
    |> beer_style_changeset(attrs)
-|> Repo.insert()
+   |> Repo.insert()
 end
 ```
 
@@ -116,6 +116,16 @@ However, if the user omitted one of the required fields, like name, we would see
 
 ```elixir
 {:error, #Ecto.Changeset<action: :insert, changes: %{abv: 0.09, ibu: 10}, errors: [name: {"can't be blank", [validation: :required]}], data: #EctoIpa.Bar.BeerStyle<>, valid?: false>}
+```
+
+Or if we tried to update abv or ibu outside of the validated rangers
+
+```elixir
+{:error,
+   #Ecto.Changeset<action: :update, changes: %{abv: 10.0, ibu: 4},
+      errors: [abv: {"must be less than or equal to %{number}", [validation: :number, number: 0.2]},
+              ibu: {"is invalid", [validation: :inclusion]}],
+              data: #EctoIpa.Bar.BeerStyle<>, valid?: false>}
 ```
 
 
