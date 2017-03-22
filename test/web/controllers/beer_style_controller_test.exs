@@ -4,8 +4,8 @@ defmodule EctoIpa.Web.BeerStyleControllerTest do
   alias EctoIpa.Bar
   alias EctoIpa.Bar.BeerStyle
 
-  @create_attrs %{abv: "120.5", ibu: 42, name: "some name"}
-  @update_attrs %{abv: "456.7", ibu: 43, name: "some updated name"}
+  @create_attrs %{abv: "0.05", ibu: 42, name: "some name"}
+  @update_attrs %{abv: "0.062", ibu: 43, name: "some updated name"}
   @invalid_attrs %{abv: nil, ibu: nil, name: nil}
 
   def fixture(:beer_style) do
@@ -29,7 +29,7 @@ defmodule EctoIpa.Web.BeerStyleControllerTest do
     conn = get conn, beer_style_path(conn, :show, id)
     assert json_response(conn, 200)["data"] == %{
       "id" => id,
-      "abv" => "120.5",
+      "abv" => 0.05,
       "ibu" => 42,
       "name" => "some name"}
   end
@@ -47,7 +47,7 @@ defmodule EctoIpa.Web.BeerStyleControllerTest do
     conn = get conn, beer_style_path(conn, :show, id)
     assert json_response(conn, 200)["data"] == %{
       "id" => id,
-      "abv" => "456.7",
+      "abv" => 0.062,
       "ibu" => 43,
       "name" => "some updated name"}
   end

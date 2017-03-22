@@ -208,5 +208,7 @@ defmodule EctoIpa.Bar do
     beer_style
     |> cast(attrs, [:name, :ibu, :abv])
     |> validate_required([:name, :ibu, :abv])
+    |> validate_inclusion(:ibu, 5..120)
+    |> validate_number(:abv, less_than_or_equal_to: 0.20, greater_than: 0)
   end
 end
