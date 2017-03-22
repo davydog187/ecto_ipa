@@ -8,8 +8,8 @@ defmodule EctoIpa.Web.BeerStyleControllerTest do
   @update_attrs %{abv: "0.062", ibu: 43, name: "some updated name"}
   @invalid_attrs %{abv: nil, ibu: nil, name: nil}
 
-  def fixture(:beer_style) do
-    {:ok, beer_style} = Bar.create_beer_style(@create_attrs)
+  def fixture(:beer_style, opts \\ %{}) do
+    {:ok, beer_style} = Bar.create_beer_style(Map.merge(@create_attrs, opts))
     beer_style
   end
 
@@ -55,6 +55,13 @@ defmodule EctoIpa.Web.BeerStyleControllerTest do
   test "does not update chosen beer_style and renders errors when data is invalid", %{conn: conn} do
     beer_style = fixture(:beer_style)
     conn = put conn, beer_style_path(conn, :update, beer_style), beer_style: @invalid_attrs
+    assert json_response(conn, 422)["errors"] != %{}
+  end
+
+  test "validates the ranges for abv and ibu", %{conn: conn} do
+    beer_style = fixture(:beer_style)
+    conn = put conn, beer_style_path(conn, :update, beer_style), beer_style: %{abv: 10, ibu: 4}
+
     assert json_response(conn, 422)["errors"] != %{}
   end
 
